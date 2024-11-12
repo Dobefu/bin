@@ -1,0 +1,192 @@
+#!/usr/bin/env dash
+
+BASEDIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
+
+BOLD="\033[1m"
+NORM="\033[0;0;0m"
+BLUE="\033[34m"
+LBLU="\033[94m"
+ORNG="\033[38;5;197m"
+
+if echo "$TERM" | grep -qiv 'color'; then
+  BOLD=""
+  NORM=""
+  BLUE=""
+  ORNG=""
+fi
+
+IS_LINUX=1
+
+if [ "$(uname 2> /dev/null)" != "Linux" ]; then
+  IS_LINUX=
+fi
+
+if [ $IS_LINUX ]; then
+  OS=$(grep "^PRETTY_NAME=" /etc/os-release | sed -r 's/PRETTY_NAME="(.*)"/\1/')
+  KERNEL="$(uname -rm)"
+  UPTIME=$(uptime -p | sed 's/up\s//')
+  CPU=$(lscpu | grep "Model name:" | sed -r 's/Model\sname:\s+//' | sed 's/CPU\s//')
+  RAM=$(free --giga | awk 'NR==2{printf "%sGB of %sGB in use", $3,$2 }')
+  DISK=$(df -Ph / | tail -1 | awk '{printf "%sB of %sB left", $4,$2 }')
+else
+  OS="MacOS $(sw_vers | grep ProductVersion | sed 's/ProductVersion:[[:space:]]*//g')"
+  KERNEL="$(uname -rm)"
+  UPTIME=$(uptime | sed 's/,.*//g' | sed 's/^ //')
+  CPU=$(sysctl -a | grep machdep.cpu.brand_string | sed 's/^.*\:[[:space:]]//g')
+  DISK=$(df -Ph / | tail -1 | awk '{printf "%sB of %sB left", $4,$2 }')
+fi
+
+IMG="
+
+
+
+
+
+
+
+
+
+
+
+
+
+"
+
+PACKAGES='-'
+LOGO_COL=$BLUE
+
+if [ $IS_LINUX ]; then
+  if command -v pacman > /dev/null; then
+    PACKAGES=$(pacman -Q | wc -l)
+    IMG="\
+              #              
+             ###             
+            #####            
+            ######           
+           ; #####;          
+          +##.#####          
+         +##########         
+        #############;       
+       ###############+      
+      #######   #######      
+    .######;     ;###;\`\".    
+   .#######;     ;#####.     
+   #########.   .########\`   
+  ######'           '######  
+ ;####                 ####; 
+ ##'                     '## 
+#'                         \`#"
+  elif command -v dpkg > /dev/null; then
+    PACKAGES=$(dpkg -l | wc -l)
+    LOGO_COL=$ORNG
+  IMG="\
+         _,met\$\$\$\$\$gg.      
+      ,g\$\$\$\$\$\$\$\$\$\$\$\$\$\$\$P.   
+    ,g\$\$P\"\"       \"\"\"Y\$\$.\". 
+   ,\$\$P'              \`\$\$\$. 
+ ',\$\$P       ,ggs.     \`\$\$b:
+ \`d\$\$'     ,\$P\"'   .    \$\$\$ 
+  \$\$P      d\$'     ,    \$\$P 
+  \$\$:      \$\$.   -    ,d\$\$' 
+  \$\$;      Y\$b._   _,d\$P'   
+  Y\$\$.    \`.\`\"Y\$\$\$\$P\"'      
+  \`\$\$b      \"-.__           
+   \`Y\$\$b                    
+    \`Y\$\$.                   
+      \`\$\$b.                 
+        \`Y\$\$b.              
+          \`\"Y\$b._           
+              \`\"\"\"\"         "
+  elif command -v dnf > /dev/null; then
+    PACKAGES=$(cat "$BASEDIR"/00-files/stats/packages)
+    LOGO_COL=$BLUE
+    IMG="\
+          ..........          
+      ...........';:;'..      
+    ..........:kNMMMMWl,'.    
+  ...........kMMM0xddd:::,..  
+ ...........oMMW;.....':::'.. 
+ ...........OMM0.......;::,.. 
+............OMM0.....';::;'...
+....',;:0XXXWMMWXXX0c:::;'....
+..';::::OKKKWMMWXXX0:,,'......
+..;::;'.....OMM0............. 
+.':::.......OMM0............. 
+.':::,.....;NMMd............  
+..':::dxdx0MMMk'..........    
+...',cWMMMMNk:..........      
+ ......,;;'.........          "
+  elif command -v nixos-version > /dev/null; then
+    PACKAGES="$(nix-store -q --references /var/run/current-system/sw | wc -l)"
+    LOGO_COL=$LBLU
+    IMG="\
+       ▄▄▄      ▄▄▄   ▄▄        
+       ▓▓▓▓     ▀░░░▄▓░░░       
+     ▄▄▄▓▓▓▓▄▄▄▄▄ ░░░░░░        
+    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓░░░         
+        ▄▄▄         ░░░░  ▄▓▓▄  
+      ▄░░░▀          ▀░░ ▄▓▓▓▀  
+░░░░░░░░░               ▓▓▓▓▓▓▓▓
+░░░░░░░░ ▄            ▄▓▓▓▓▓▓▓▓▀
+  ▄░░░░▄▓▓▄          ▄▓▓▓▀      
+   ░░▀ ▀▓▓▓▓         ▀▀▀▀       
+         ▓▓▓▓ ░░░░░░░░░░░░░▓    
+        ▓▓▓▓▓▓▄▀▀▀▀▀░░░░▀▀▀     
+       ▓▓▓▓▀▓▓▓▄     ░░░░       
+        ▀▀  ▀▀▀▀▀     ▀▀        "
+  fi
+fi
+
+INFO="\
+▄▄▄▄       █          ▄▀▀
+█   ▀▄ ▄▄▄ █▄▄▄  ▄▄▄▄▄█▄▄▄   ▄
+█    ██▀ ▀██▀ ▀██▀  █ █  █   █
+█    ██   ██   ██▀▀▀▀ █  █   █
+█▄▄▄▀ ▀█▄█▀██▄█▀▀█▄▄▀ █  ▀▄▄▀█
+
+${BOLD}OS:       ${NORM}${OS}
+${BOLD}Kernel:   ${NORM}${KERNEL}
+${BOLD}Terminal: ${NORM}${TERM}
+${BOLD}Uptime:   ${NORM}${UPTIME}
+${BOLD}CPU:      ${NORM}${CPU}
+${BOLD}RAM:      ${NORM}${RAM}
+${BOLD}Packages: ${NORM}${PACKAGES}
+${BOLD}Root:     ${NORM}${DISK}"
+
+if [ ! $IS_LINUX ]; then
+  LOGO_COL=$BLUE
+  IMG="\
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⡿⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢀⣠⣤⣤⣤⣀⣀⠈⠋⠉⣁⣠⣤⣤⣤⣀⡀⠀⠀
+⠀⢠⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀
+⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀
+⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣀
+⠀⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁
+⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠁⠀
+⠀⠀⠀⠈⠙⢿⣿⣿⣿⠿⠟⠛⠻⠿⣿⣿⣿⡿⠋   
+"
+
+	INFO="\
+▄▄▄▄       █          ▄▀▀
+█   ▀▄ ▄▄▄ █▄▄▄  ▄▄▄▄▄█▄▄▄   ▄
+█    ██▀ ▀██▀ ▀██▀  █ █  █   █
+█    ██   ██   ██▀▀▀▀ █  █   █
+█▄▄▄▀ ▀█▄█▀██▄█▀▀█▄▄▀ █  ▀▄▄▀█
+
+${BOLD}OS:       ${NORM}${OS}
+${BOLD}Kernel:   ${NORM}${KERNEL}
+${BOLD}Terminal: ${NORM}${TERM}
+${BOLD}Uptime:   ${NORM}${UPTIME}
+${BOLD}CPU:      ${NORM}${CPU}
+${BOLD}Root:     ${NORM}${DISK}"
+fi
+
+I=1
+printf "%s\n" "$IMG" | while IFS='' read -r LINE; do
+printf "%b%s%b  %b\n" "${BOLD}${LOGO_COL}" "${LINE}" "${NORM}" "$(echo "$INFO" | sed -n "$I"p)"
+  I=$((I + 1))
+done

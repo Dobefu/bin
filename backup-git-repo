@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Exit on error.
+set -e
+
+cd "$1"
+
+printf "Pulling files...\n"
+git pull
+
+if [ -n "$(git status -s)" ]; then
+  printf "Committing changed files...\n"
+  DATE=$(date)
+  git add -A
+  git commit -m "$DATE"
+  git push
+  git pull
+fi
+
+printf "Config backup complete!\n"
