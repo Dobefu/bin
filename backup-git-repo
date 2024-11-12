@@ -10,6 +10,7 @@ git pull
 
 if [ -n "$(git status -s)" ]; then
   printf "Committing changed files...\n"
+
   DATE=$(date)
   git add -A
   git commit -m "$DATE"
