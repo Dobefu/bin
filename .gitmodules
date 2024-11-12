@@ -1,0 +1,3 @@
+[submodule "motd-git"]
+	path = motd-git
+	url = git@github.com:Dobefu/motd.git
