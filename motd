@@ -1,5 +1,9 @@
 #!/usr/bin/env dash
 
+$HOME/bin/motd-git/motd
+
+exit 0
+
 BASEDIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 || exit ; pwd -P )"
 
 BOLD="\033[1m"
