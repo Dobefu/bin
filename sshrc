@@ -11,7 +11,7 @@ function sshrc() {
             files="$files .sshrc.d"
         fi
         SIZE=$(tar cfz - -h -C $SSHHOME $files | wc -c)
-        if [ $SIZE -gt 65536 ]; then
+        if [ $SIZE -gt 131072 ]; then
             echo >&2 $'.sshrc.d and .sshrc files must be less than 64kb\ncurrent size: '$SIZE' bytes'
             exit 1
         fi
@@ -61,7 +61,7 @@ EOF
                 )"' | tr -s ' ' $'\n' | openssl enc -base64 -d > \$SSHHOME/bashsshrc
             chmod +x \$SSHHOME/bashsshrc
 
-            echo $'"$(tar czf - -h -C $SSHHOME $files | openssl enc -base64)"' | tr -s ' ' $'\n' | openssl enc -base64 -d | tar mxzf - -C \$SSHHOME
+            echo $'"$(tar czf - -h --no-xattrs -C $SSHHOME $files | openssl enc -base64)"' | tr -s ' ' $'\n' | openssl enc -base64 -d | tar mxzf - --warning=no-unknown-keyword -C \$SSHHOME
             export SSHHOME=\$SSHHOME
             echo \"$CMDARG\" >> \$SSHHOME/sshrc.bashrc
             bash --rcfile \$SSHHOME/sshrc.bashrc
@@ -91,7 +91,7 @@ function sshrc_parse() {
     esac
     shift
   done
-  if [ -z $DOMAIN ]; then
+  if [ -z "$DOMAIN" ]; then
     ssh $SSHARGS; exit 1;
   fi
 }
