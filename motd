@@ -1,5 +1,3 @@
 #!/usr/bin/env dash
 
 "$HOME"/bin/motd-git/motd
-
-exit 0
