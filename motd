@@ -1,3 +1,1 @@
-#!/usr/bin/env dash
-
-"$HOME"/bin/motd-git/motd
+motd-git/motd
