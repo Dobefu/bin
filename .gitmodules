@@ -1,3 +1,6 @@
 [submodule "motd-git"]
 	path = motd-git
 	url = git@github.com:Dobefu/motd.git
+[submodule "cli-prompt-git"]
+	path = cli-prompt-git
+	url = git@github.com:Dobefu/cli-prompt.git
