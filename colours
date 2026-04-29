@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+OFFSET=16
+
+while [ $OFFSET -lt 52 ]; do
+  col2=$((OFFSET + 36))
+  col3=$((col2 + 36))
+  col4=$((col3 + 36))
+  col5=$((col4 + 36))
+  col6=$((col5 + 36))
+  col7=$((col6 + 36))
+
+  if [ $col7 -gt 250 ]; then
+    col7=$((col7 - 251))
+  fi
+
+  printf "\033[38;5;%sm█ " "$OFFSET"
+  printf "%03d" "$OFFSET"
+  printf "   \033[38;5;%sm█ " "$col2"
+  printf "%03d" "$col2"
+  printf "   \033[38;5;%sm█ " "$col3"
+  printf "%03d" "$col3"
+  printf "   \033[38;5;%sm█ " "$col4"
+  printf "%03d" "$col4"
+  printf "   \033[38;5;%sm█ " "$col5"
+  printf "%03d" "$col5"
+  printf "   \033[38;5;%sm█ " "$col6"
+  printf "%03d" "$col6"
+  printf "   \033[38;5;%sm█ " "$col7"
+  printf "%03d" "$col7"
+
+  OFFSET=$((OFFSET + 1))
+  printf "\n"
+done
